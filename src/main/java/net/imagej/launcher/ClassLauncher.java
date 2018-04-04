@@ -74,6 +74,7 @@ public class ClassLauncher {
 	 */
 	public static void main(final String[] arguments) {
 		originalArguments = arguments;
+		SplashScreen.show();
 		run(arguments);
 	}
 

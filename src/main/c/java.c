@@ -168,9 +168,12 @@ const char *get_java_home_env(void)
 const char *get_java_home(void)
 {
 	const char *result;
-	if (absolute_java_home)
+	if (absolute_java_home) {
+		if (debug) error("Using absolute_java_home: %s", absolute_java_home);
 		return absolute_java_home;
+	}	
 	result = !relative_java_home ? NULL : ij_path(relative_java_home);
+	if (debug) error("Trying to use relative_java_home: %s", result);
 	if (result && is_java_home(result))
 		return result;
 	if (result && (!suffixcmp(result, -1, "/jre") ||

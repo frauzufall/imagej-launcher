@@ -106,7 +106,7 @@ unsigned int guess_java_version(void)
 void set_java_home(const char *absolute_path)
 {
 	if (debug)
-		error("Setting absolute_java_home: %s", relative_path);
+		error("Setting absolute_java_home: %s", absolute_path);
 	absolute_java_home = absolute_path;
 }
 

@@ -108,6 +108,8 @@ void set_java_home(const char *absolute_path)
 	if (debug)
 		error("Setting absolute_java_home: %s", absolute_path);
 	absolute_java_home = absolute_path;
+	if (debug)
+		error("absolute_java_home is now: %s", absolute_java_home);
 }
 
 void set_relative_java_home(const char *relative_path)
@@ -115,6 +117,8 @@ void set_relative_java_home(const char *relative_path)
 	if (debug)
 		error("Setting relative_java_home: %s", relative_path);
 	relative_java_home = relative_path;
+	if (debug)
+		error("relative_java_home is now: %s", relative_java_home);
 }
 
 int is_jre_home(const char *directory)

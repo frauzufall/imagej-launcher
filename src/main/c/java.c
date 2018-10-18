@@ -123,6 +123,7 @@ void set_relative_java_home(const char *relative_path)
 
 int is_jre_home(const char *directory)
 {
+	error("Entering is_jre_home with %s", directory);
 	int i;
 	int result = 0;
 	if (dir_exists(directory)) {
@@ -150,6 +151,7 @@ int is_jre_home(const char *directory)
 
 int is_java_home(const char *directory)
 {
+	error("Entering is_java_home with %s", directory);
 	struct string *jre = string_initf("%s/jre", directory);
 	int result = is_jre_home(jre->buffer);
 	if (!result) {
@@ -171,18 +173,21 @@ const char *get_java_home_env(void)
 
 const char *get_java_home(void)
 {
+	error("Entering get_java_home()");
+
 	const char *result;
 	if (absolute_java_home) {
-		if (debug) error("Using absolute_java_home: %s", absolute_java_home);
+		error("Using absolute_java_home: %s", absolute_java_home);
 		return absolute_java_home;
 	}	
 	result = !relative_java_home ? NULL : ij_path(relative_java_home);
-	if (debug) error("Trying to use relative_java_home: %s", result);
+	error("Trying to use relative_java_home: %s", result);
 	if (result && is_java_home(result))
 		return result;
 	if (result && (!suffixcmp(result, -1, "/jre") ||
 			 !suffixcmp(result, -1, "/jre/")) &&
 			is_jre_home(result)) {
+		
 		char *new_eol = (char *)(result + strlen(result) - 4);
 		*new_eol = '\0';
 		return result;

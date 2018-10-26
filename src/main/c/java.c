@@ -200,6 +200,7 @@ const char *get_java_home(void)
 		error("get_java_home: Returning %s", result);
 		return result;
 	}
+	error("get_java_home: Returning discover_system_java_home()");
 	return discover_system_java_home();
 }
 
@@ -255,6 +256,7 @@ const char *get_jre_home(void)
 		const char *jre_home = getenv("JRE_HOME");
 		if (jre_home && *jre_home && is_jre_home(jre_home)) {
 			jre = string_copy(jre_home);
+			error("get_jre_home: Setting jre to %s", jre->buffer);
 			if (debug)
 				error("Found a JRE in JRE_HOME: %s", jre->buffer);
 			return jre->buffer;
@@ -262,6 +264,7 @@ const char *get_jre_home(void)
 		jre_home = getenv("JAVA_HOME");
 		if (jre_home && *jre_home && is_jre_home(jre_home)) {
 			jre = string_copy(jre_home);
+			error("get_jre_home: Setting jre to %s", jre->buffer);
 			if (debug)
 				error("Found a JRE in JAVA_HOME: %s", jre->buffer);
 			return jre->buffer;
@@ -274,18 +277,21 @@ const char *get_jre_home(void)
 	len = strlen(result);
 	if (len > 4 && !suffixcmp(result, len, "/jre")) {
 		jre = string_copy(result);
+		error("get_jre_home: Setting jre to %s", jre->buffer);
 		if (debug)
 			error("JAVA_HOME points to a JRE: '%s'", result);
 		return jre->buffer;
 	}
 
 	jre = string_initf("%s/jre", result);
+	error("get_jre_home: Setting jre to %s", jre->buffer);
 	if (dir_exists(jre->buffer)) {
 		if (debug)
 			error("JAVA_HOME contains a JRE: '%s'", jre->buffer);
 		return jre->buffer;
 	}
 	string_set(jre, result);
+	error("get_jre_home: Setting jre to %s", jre->buffer);
 	if (debug)
 		error("JAVA_HOME appears to be a JRE: '%s'", jre->buffer);
 	return jre->buffer;

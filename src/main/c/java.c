@@ -75,6 +75,7 @@ static const char *parse_number(const char *string, unsigned int *result, int sh
 
 unsigned int guess_java_version(void)
 {
+	error("guess_java_version: Entering");
 	const char *java_home = get_jre_home();
 
 	while (java_home && *java_home) {
@@ -95,11 +96,13 @@ unsigned int guess_java_version(void)
 			if (p) {
 				if (*p == '_')
 					p = parse_number(p + 1, &result, 0);
+				error("guess_java_version: Returning %d", result);
 				return result;
 			}
 		}
 		java_home += strcspn(java_home, "\\/") + 1;
 	}
+	error("guess_java_version: Returning 0");
 	return 0;
 }
 
@@ -202,6 +205,7 @@ const char *get_java_home(void)
 
 const char *get_jre_home(void)
 {
+	error("get_jre_home: Entering");
 	const char *result;
 	int len;
 	static struct string *jre;

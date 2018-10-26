@@ -105,25 +105,21 @@ unsigned int guess_java_version(void)
 
 void set_java_home(const char *absolute_path)
 {
-	if (debug)
-		error("Setting absolute_java_home: %s", absolute_path);
+	error("set_java_home: Entering with %s", absolute_path);
 	absolute_java_home = absolute_path;
-	if (debug)
-		error("absolute_java_home is now: %s", absolute_java_home);
+	error("set_java_home: absolute_java_home is now: %s", absolute_java_home);
 }
 
 void set_relative_java_home(const char *relative_path)
 {
-	if (debug)
-		error("Setting relative_java_home: %s", relative_path);
+	error("set_relative_java_home: Entering with %s", relative_path);
 	relative_java_home = relative_path;
-	if (debug)
-		error("relative_java_home is now: %s", relative_java_home);
+	error("set_relative_java_home: relative_java_home is now: %s", relative_java_home);
 }
 
 int is_jre_home(const char *directory)
 {
-	error("Entering is_jre_home with %s", directory);
+	error("is_jre_home: Entering with %s", directory);
 	int i;
 	int result = 0;
 	if (dir_exists(directory)) {
@@ -151,7 +147,7 @@ int is_jre_home(const char *directory)
 
 int is_java_home(const char *directory)
 {
-	error("Entering is_java_home with %s", directory);
+	error("is_java_home: Entering with %s", directory);
 	struct string *jre = string_initf("%s/jre", directory);
 	int result = is_jre_home(jre->buffer);
 	if (!result) {
@@ -165,7 +161,9 @@ int is_java_home(const char *directory)
 
 const char *get_java_home_env(void)
 {
+	error("get_java_home_env: Entering");
 	const char *env = getenv("JAVA_HOME");
+	error("get_java_home_env: JAVA_HOME is set to %s", env);
 	if (env && is_java_home(env))
 		return env;
 	return NULL;
@@ -173,8 +171,7 @@ const char *get_java_home_env(void)
 
 const char *get_java_home(void)
 {
-	error("Entering get_java_home()");
-
+	error("get_java_home: Entering");
 	const char *result;
 	if (absolute_java_home) {
 		error("Using absolute_java_home: %s", absolute_java_home);
@@ -283,6 +280,7 @@ const char *get_jre_home(void)
 
 char *discover_system_java_home(void)
 {
+	error("discover_system_java_home: Entering");
 #ifdef WIN32
 	HKEY key;
 	HRESULT result;

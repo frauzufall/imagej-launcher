@@ -211,11 +211,15 @@ const char *get_jre_home(void)
 	static struct string *jre;
 	static int initialized;
 
-	if (jre)
+	if (jre) {
+		error("get_jre_home: Returning %s", jre->buffer);
 		return jre->buffer;
+	}	
 
-	if (initialized)
+	if (initialized) {
+		error("get_jre_home: Returning NULL");
 		return NULL;
+	}	
 	initialized = 1;
 
 	/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */

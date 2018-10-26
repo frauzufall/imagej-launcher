@@ -178,20 +178,25 @@ const char *get_java_home(void)
 		return absolute_java_home;
 	}	
 	result = !relative_java_home ? NULL : ij_path(relative_java_home);
-	error("Trying to use relative_java_home: %s", result);
-	if (result && is_java_home(result))
+	error("get_java_home: Trying to use relative_java_home: %s", result);
+	if (result && is_java_home(result)) {
+		error("get_java_home: Returning %s", result);
 		return result;
+	}
 	if (result && (!suffixcmp(result, -1, "/jre") ||
 			 !suffixcmp(result, -1, "/jre/")) &&
 			is_jre_home(result)) {
 		
 		char *new_eol = (char *)(result + strlen(result) - 4);
 		*new_eol = '\0';
+		error("get_java_home: Returning %s", result);
 		return result;
 	}
 	result = get_java_home_env();
-	if (result)
+	if (result) {
+		error("get_java_home: Returning %s", result);
 		return result;
+	}
 	return discover_system_java_home();
 }
 
@@ -332,6 +337,7 @@ char *discover_system_java_home(void)
 		 */
 		if (debug)
 			error("Ignoring Apple Framework java executable: '%s'", java_executable);
+		error("discover_system_java_home: Returning NULL");
 		return NULL;
 	}
 #endif
@@ -347,8 +353,10 @@ char *discover_system_java_home(void)
 				len -= strlen(suffixes[i]);
 				path[len] = '\0';
 			}
+		error("discover_system_java_home: Returning %s", path);
 		return path;
 	}
+	error("discover_system_java_home: Returning NULL");
 	return NULL;
 #endif
 }

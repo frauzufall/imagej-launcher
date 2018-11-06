@@ -106,6 +106,38 @@ unsigned int guess_java_version(void)
 	return 0;
 }
 
+unsigned int guess_java_version(const char *java_home)
+{
+	error("guess_java_version: Entering with %s", java_home);
+
+	while (java_home && *java_home) {
+		if (!prefixcmp(java_home, "jdk") || !prefixcmp(java_home, "jre") || !prefixcmp(java_home, "java")) {
+			unsigned int result = 0;
+			// Depends on Java version: "jdkX.Y.Z_b" vs "jdk-X.Y.Z"
+			const char *p = java_home + 3;
+			// Move pointer by one for OpenJDK (where folder names start with "java")
+			if (*p == 'a') p++;
+			// Move pointer by one for Java 9
+			if (*p == '-') p++;
+
+			p = parse_number(p, &result, 24);
+			if (p && *p == '.')
+				p = parse_number(p + 1, &result, 16);
+			if (p && *p == '.')
+				p = parse_number(p + 1, &result, 8);
+			if (p) {
+				if (*p == '_')
+					p = parse_number(p + 1, &result, 0);
+				error("guess_java_version: Returning %d", result);
+				return result;
+			}
+		}
+		java_home += strcspn(java_home, "\\/") + 1;
+	}
+	error("guess_java_version: Returning 0");
+	return 0;
+}
+
 void set_java_home(const char *absolute_path)
 {
 	error("set_java_home: Entering with %s", absolute_path);
@@ -148,6 +180,9 @@ int is_jre_home(const char *directory)
 	return result;
 }
 
+/**
+ * Checks if a directory is a java home directory.
+ */
 int is_java_home(const char *directory)
 {
 	error("is_java_home: Entering with %s", directory);
@@ -176,10 +211,14 @@ const char *get_java_home(void)
 {
 	error("get_java_home: Entering");
 	const char *result;
+
+	/* Check if an absolute path has been previously set */
 	if (absolute_java_home) {
 		error("Using absolute_java_home: %s", absolute_java_home);
 		return absolute_java_home;
-	}	
+	}
+
+	/* Check if a relative path has been previously set */
 	result = !relative_java_home ? NULL : ij_path(relative_java_home);
 	error("get_java_home: Trying to use relative_java_home: %s", result);
 	if (result && is_java_home(result)) {
@@ -189,17 +228,20 @@ const char *get_java_home(void)
 	if (result && (!suffixcmp(result, -1, "/jre") ||
 			 !suffixcmp(result, -1, "/jre/")) &&
 			is_jre_home(result)) {
-		
+		/* Strip jre/ from result */
 		char *new_eol = (char *)(result + strlen(result) - 4);
 		*new_eol = '\0';
 		error("get_java_home: Returning %s", result);
 		return result;
 	}
+
+	/* Check JAVA_HOME environment variable */
 	result = get_java_home_env();
 	if (result) {
 		error("get_java_home: Returning %s", result);
 		return result;
 	}
+
 	error("get_java_home: Returning discover_system_java_home()");
 	return discover_system_java_home();
 }
@@ -215,7 +257,7 @@ const char *get_jre_home(void)
 	if (jre) {
 		error("get_jre_home: Returning %s", jre->buffer);
 		return jre->buffer;
-	}	
+	}
 
 	if (initialized) {
 		error("get_jre_home: Returning NULL");
@@ -406,9 +448,25 @@ void set_library_path(const char *path)
 	library_path = path;
 }
 
-const char *get_library_path(void)
+const char *get_library_path()
 {
 	return library_path;
+}
+
+/**
+ * Returns the correct library path based on a lookup of which Java
+ * version path contains.
+ */
+const char *get_library_path(const char *path)
+{
+	return
+#if defined(__APPLE__)
+		"lib/server/libjvm.dylib";
+#elif defined(WIN32)
+		sizeof(void *) < 8 ? "bin/client/jvm.dll" : "bin/server/jvm.dll";
+#else
+		sizeof(void *) < 8 ? "lib/i386/client/libjvm.so" : (guess_java_version(path) >= 0x09000000 ? "lib/server/libjvm.so" : "lib/amd64/server/libjvm.so");
+#endif
 }
 
 void add_java_home_to_path(void)

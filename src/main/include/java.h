@@ -32,6 +32,7 @@
 #define JAVA_H
 
 extern unsigned int guess_java_version(void);
+extern unsigned int guess_java_version(const char *java_home);
 
 extern const char *get_java_command(void);
 
@@ -49,6 +50,7 @@ extern void set_default_library_path(void);
 extern const char *get_default_library_path(void);
 extern void set_library_path(const char *path);
 extern const char *get_library_path(void);
+extern const char *get_library_path(const char *path);
 
 extern void add_java_home_to_path(void);
 

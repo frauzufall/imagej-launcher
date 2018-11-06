@@ -276,7 +276,7 @@ static int create_java_vm(JavaVM **vm, void **env, JavaVMInitArgs *args)
 	string_set_length(buffer, 0);
 #endif
 
-	string_addf(buffer, "%s/%s", java_home, get_library_path());
+	string_addf(buffer, "%s/%s", java_home, get_library_path(java_home));
 
 	if (debug)
 		error("Opening Java library %s", buffer->buffer);
